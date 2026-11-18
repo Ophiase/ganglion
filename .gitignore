@@ -1,0 +1,6 @@
+.agents/build/
+.agents/local/
+.rumdl_cache/
+.envrc
+node_modules/
+dist/

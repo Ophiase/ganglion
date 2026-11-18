@@ -1,0 +1,61 @@
+---
+name: update-in-obsidian
+description: Build Ganglion and install it into the user's Obsidian vault, finding the vault when `.envrc` does not name it. Use when the user asks to install, reinstall or update the plugin in their vault, or to try a change in Obsidian.
+---
+
+# Update in Obsidian
+
+`just install-plugin` builds the bundle and copies it into
+`$OBSIDIAN_VAULT`, exported by `.envrc` through direnv. This skill makes
+sure the right vault is named, then runs it.
+
+## 1. Find the vault
+
+Stop at the first source that names one vault.
+
+1. `OBSIDIAN_VAULT` in the environment or in `.envrc`, if that folder still
+   holds a `.obsidian`.
+2. Your memory: a vault path recorded for this machine.
+3. A vault where Ganglion is already installed: a folder holding
+   `.obsidian/plugins/ganglion/manifest.json`. Search the vaults Obsidian
+   knows first, then the home folder.
+4. The vaults Obsidian knows, the `path` of each entry under `vaults` in
+   its `obsidian.json`:
+
+   | Install | `obsidian.json` |
+   | --- | --- |
+   | Linux | `~/.config/obsidian/` |
+   | Linux, Flatpak | `~/.var/app/md.obsidian.Obsidian/config/obsidian/` |
+   | Linux, Snap | `~/snap/obsidian/current/.config/obsidian/` |
+   | macOS | `~/Library/Application Support/obsidian/` |
+   | Windows | `%APPDATA%\obsidian\` |
+
+   The entry with `"open": true` is the vault in use.
+
+Several candidates and nothing to choose between them: ask the user, listing
+them. None: ask for the path.
+
+## 2. Record it
+
+- Write `export OBSIDIAN_VAULT="<absolute path>"` into `.envrc`, after
+  checking that `git check-ignore .envrc` succeeds. Keep its other lines.
+- Never run `direnv allow` yourself: tell the user it is theirs to run.
+- Save the path in your memory, with the machine's host name, so the next
+  session on a machine without `.envrc` finds it at step 2.
+
+The path never goes into a tracked file or a commit.
+
+## 3. Install
+
+- `node_modules` missing: `just setup` first.
+- `OBSIDIAN_VAULT="<path>" just install-plugin`, so the run does not wait
+  for direnv. It refuses a folder without `.obsidian`; then go back to step
+  1 rather than creating one.
+- `data.json` in the plugin folder holds the user's settings:
+  `just install-plugin` leaves it alone, and so do you.
+
+## 4. Tell the user
+
+Say which vault was updated. Obsidian keeps the old bundle in memory until
+Ganglion is turned off and on again in the community plugins, or the app is
+reloaded: say so, every time.

@@ -1,0 +1,10 @@
+{
+  "id": "ganglion",
+  "name": "Ganglion",
+  "version": "0.1.0",
+  "minAppVersion": "1.14.0",
+  "description": "Open relative markdown links that point outside the vault, without indexing them.",
+  "author": "Phorcys",
+  "authorUrl": "https://github.com/Ophiase",
+  "isDesktopOnly": true
+}
